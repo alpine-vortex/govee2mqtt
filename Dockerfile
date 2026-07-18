@@ -37,7 +37,7 @@ COPY --from=builder --chown=govee:govee /data /data
 COPY assets /app/assets
 
 USER govee:govee
-LABEL org.opencontainers.image.source="https://github.com/wez/govee2mqtt"
+LABEL org.opencontainers.image.source="https://github.com/alpine-vortex/govee2mqtt"
 ENV \
   RUST_BACKTRACE=full \
   PATH=/app:$PATH \
@@ -50,5 +50,4 @@ CMD ["/app/govee", \
   "--govee-iot-key=/data/iot.key", \
   "--govee-iot-cert=/data/iot.cert", \
   "--amazon-root-ca=/app/AmazonRootCA1.pem"]
-
 

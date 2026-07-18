@@ -36,7 +36,12 @@ via the [Home Assistant MQTT Integration](https://www.home-assistant.io/integrat
 
 * [Installing the HASS Add-On](docs/ADDON.md) - for HAOS and Supervised HASS users
 * [Running it in Docker](docs/DOCKER.md)
-* [Configuration](docs/CONFIG.md)
+   * [Configuration](docs/CONFIG.md)
+
+## Maintaining this fork
+
+This fork publishes its Docker and Home Assistant add-on images manually from
+a trusted local machine. See [manual publishing](docs/MANUAL_PUBLISH.md).
 
 ## Have a question?
 
@@ -60,4 +65,3 @@ Control](https://github.com/wez/govee-lan-hass/).
 
 The AWS IoT support was made possible by the work of @bwp91 in
 [homebridge-govee](https://github.com/bwp91/homebridge-govee/).
-
