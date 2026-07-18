@@ -38,10 +38,81 @@ via the [Home Assistant MQTT Integration](https://www.home-assistant.io/integrat
 * [Running it in Docker](docs/DOCKER.md)
    * [Configuration](docs/CONFIG.md)
 
+## Why this fork exists
+
+This is the personally maintained Home Assistant deployment of Govee2MQTT for
+the `alpine-vortex` household. It exists to keep a reliable working bridge
+while preserving an older installation as a fallback.
+
+The fork is based on the compatibility work in `miller79/govee2mqtt`, which
+restored the account-login behavior needed for the affected Govee service
+changes. It also adds explicit support for the H7175 Gooseneck Kettle, exposing
+power, current temperature, target temperature, modes, and mode presets in
+Home Assistant.
+
+## What changed
+
+* The Home Assistant repository and published images are owned by
+  [`alpine-vortex/govee2mqtt`](https://github.com/alpine-vortex/govee2mqtt).
+* The H7175 kettle is mapped as a kettle device instead of appearing only as
+  diagnostics.
+* Images are built and published manually from a trusted local machine; this
+  fork does not use GitHub Actions for image publishing.
+* The runtime image and both architecture-specific Home Assistant images are
+  public GHCR packages so Home Assistant can install and update the App.
+* The current Home Assistant App comes from this repository. The previous
+  Miller fork is intentionally retained, stopped, and configured for manual
+  start as a fallback.
+
+## How it was set up
+
+1. Add `https://github.com/alpine-vortex/govee2mqtt` in Home Assistant under
+   **Settings → Apps → App Store → Repositories**.
+2. Install the Govee to MQTT Bridge from this repository as a separate App.
+3. Copy the Govee and MQTT options from the working fallback App.
+4. Stop the fallback App before starting this one; both must not publish the
+   same MQTT discovery entities at the same time.
+5. Keep the fallback App set to manual start.
+
 ## Maintaining this fork
 
-This fork publishes its Docker and Home Assistant add-on images manually from
-a trusted local machine. See [manual publishing](docs/MANUAL_PUBLISH.md).
+See [manual publishing](docs/MANUAL_PUBLISH.md) for the detailed publishing
+workflow. In short:
+
+1. Make and test a change on a branch, then merge it into `main`.
+2. Bump `version` in `addon/config.yaml` before every published release. Home
+   Assistant detects updates from this version; republishing an unchanged
+   version will not create an App update.
+3. On a trusted Linux machine with Docker/Buildx, Rust, `cross`, and a GHCR
+   login authorized with `write:packages`, update your local `main` and run:
+
+   ```sh
+   make publish
+   ```
+
+   The publish script requires the local checkout to be exactly at
+   `origin/main`, cross-compiles `amd64` and `arm64` binaries, publishes the
+   multi-architecture runtime image, and then publishes the `amd64` and
+   `aarch64` Home Assistant images.
+
+4. Keep these GHCR packages public: `govee2mqtt`, `govee2mqtt-amd64`, and
+   `govee2mqtt-aarch64`. Home Assistant cannot use the publisher's local
+   Docker credentials to pull private images.
+5. Review upstream changes deliberately before merging them; preserve the
+   H7175 mapping and the manual publishing setup when resolving conflicts.
+
+## Reverting safely
+
+The fallback App is the fast rollback path:
+
+1. Stop the `alpine-vortex` Govee to MQTT Bridge App.
+2. Start the stopped Miller-fork Govee to MQTT Bridge App.
+3. Confirm that the Govee entities return and that only one bridge is running.
+
+Do not remove the fallback App or its configuration until the replacement has
+been stable for a while. To roll back a code change in this repository, revert
+the corresponding commit or pull request, bump `addon/config.yaml` to a new
+version, publish again, and apply the offered Home Assistant update.
 
 ## Have a question?
 
