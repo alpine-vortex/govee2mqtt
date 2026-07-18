@@ -151,7 +151,10 @@ impl GoveeApiClient {
         &self,
         device: &HttpDeviceInfo,
     ) -> anyhow::Result<Vec<DeviceCapability>> {
-        if !device.supports_dynamic_scenes() {
+        // H7175 does not advertise a DynamicScene capability even though the
+        // Govee app allows saved DIY actions for it. Query the DIY endpoint
+        // for that kettle as an explicit compatibility exception.
+        if !device.supports_dynamic_scenes() && device.sku != "H7175" {
             return Ok(vec![]);
         }
 
