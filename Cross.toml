@@ -1,0 +1,8 @@
+# Rust 1.97 host tools require a newer glibc than the legacy images selected
+# by cross 0.2.5.  Use Cross's maintained images instead of those defaults.
+
+[target.x86_64-unknown-linux-musl]
+image = "ghcr.io/cross-rs/x86_64-unknown-linux-musl:main"
+
+[target.aarch64-unknown-linux-musl]
+image = "ghcr.io/cross-rs/aarch64-unknown-linux-musl:main"

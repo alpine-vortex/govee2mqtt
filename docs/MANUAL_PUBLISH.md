@@ -18,6 +18,9 @@ target architecture:
 cargo install cross
 ```
 
+The repository selects Cross's current maintained builder images automatically.
+This avoids a glibc mismatch with current Rust toolchains.
+
 ## Publish
 
 From the repository root, run:
