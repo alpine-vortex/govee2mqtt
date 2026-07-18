@@ -18,6 +18,24 @@ if [ "$(git -C "$REPO_ROOT" rev-parse HEAD)" != "$(git -C "$REPO_ROOT" rev-parse
   exit 1
 fi
 
+if ! command -v cross >/dev/null 2>&1; then
+  echo "Missing required Rust cross-compiler. Install it with: cargo install cross" >&2
+  exit 1
+fi
+
+build_target() {
+  target="$1"
+  echo "==> Building govee binary for ${target}"
+  "$REPO_ROOT/scripts/build-cross.sh" "$target"
+}
+
+case ",$PLATFORMS," in
+  *,linux/amd64,*) build_target linux/amd64 ;;
+esac
+case ",$PLATFORMS," in
+  *,linux/arm64,*) build_target linux/arm64 ;;
+esac
+
 echo "==> Building and pushing runtime image: ${IMAGE}"
 docker buildx build \
   --platform "$PLATFORMS" \
